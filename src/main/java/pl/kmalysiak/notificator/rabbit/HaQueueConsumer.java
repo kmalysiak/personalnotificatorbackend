@@ -20,16 +20,22 @@ public class HaQueueConsumer {
     private final HaEventService rks;
     private final NotificationManager notificationManager;
     private final NotificationMapper notificationCalculator;
+
     @RabbitListener(
             queues = "${queue.ha}",
             containerFactory = "rabbitListenerContainerFactory"
     )
     public void consume(Message message) {
         HaEntityDto dto = rks.updateHaEntityStateOnHaEvent(EventNotification.fromMessage(message));
-        if(dto.shouldSendMobileNotification()) {
+        if (dto.shouldSendMobileNotification()) {
             Pair<String, String> typeAndBody = notificationCalculator.getNotificationTypeAndStatus(dto);
-           // notificationManager.sendMsgToUsers(dto.getRecipientEmailsAsSet(), typeAndBody.getFirst(), typeAndBody.getSecond());
+            if(!"##no_notification##".equals(typeAndBody.getSecond())) {
+                if ("all".equalsIgnoreCase(dto.getRecipientEmails()))
+                    notificationManager.sendMsgToAllUsers(typeAndBody.getFirst(), typeAndBody.getSecond());
+                else if (!"none".equals(dto.getRecipientEmails()) && !dto.getRecipientEmailsAsSet().isEmpty()) {
+                    notificationManager.sendMsgToUsers(dto.getRecipientEmailsAsSet(), typeAndBody.getFirst(), typeAndBody.getSecond());
+                }
+            }
         }
     }
-
 }

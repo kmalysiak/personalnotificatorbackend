@@ -1,10 +1,20 @@
-{
-"currState": "${{
-"ok"      : "dobrze",
-"nok"     : "zle",
-"err"     : "blad",
-"timeout" : "przekroczony_czas",
-"on" : "otwarty",
-"off" : "zamkniety"
-}[currState]! "nieznany"}"
-}
+${{
+'sensor.switch_aqua_light_natezenie_pradu' : 'lampa akwarium prąd [A]',
+'sensor.tz3000_xzhnra8x_ts011f_natezenie_pradu' : 'grzałka akwarium  prąd [A]',
+'sensor.tz3000_xzhnra8x_ts011f_napiecie' : 'grzałka akwarium  napięcie [V]',
+'sensor.switch_aqua_light_napiecie' : 'lampa akwarium napięcie [V]',
+'sensor.tz3000_xzhnra8x_ts011f_moc' : 'grzałka akwarium  moc [W]',
+'sensor.switch_aqua_light_moc' : 'lampa akwarium moc [W]',
+'sensor.switch_aqua_light_suma_dostarczonej_energii': 'lampa akwarium pobór [kWh]',
+'light.switch_ceiling_light': 'światło sufit',
+'sensor.tz3000_xzhnra8x_ts011f_suma_dostarczonej_energii' : 'grzałka akwarium pobór [kWh]',
+'switch.switch_aqua_light' : 'lampa akwarium',
+'binary_sensor.move_stairs' : 'czujnik schody',
+'binary_sensor.move_gate' : 'brama wjazdowa',
+'sun.sun' : 'słońce',
+'weather.forecast_dom' : 'pogoda',
+'sensor.sun_next_rising' : 'następny wschód',
+'binary_sensor.entrance_gate' : 'czujnik brama',
+'sensor.sun_next_noon' : 'następna pełnia',
+'sensor.sun_next_dusk' : 'natępny zmierzch'
+}[entityId]! entityId}

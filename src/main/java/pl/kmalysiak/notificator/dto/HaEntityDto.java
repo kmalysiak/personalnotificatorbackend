@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 public class HaEntityDto {
     private Long id;
     private String entityId;
+    private String entityFriendlyName;
     private Long receivedCount;
     private Boolean notifyMobile;
     private LocalDateTime prevReceived;
@@ -32,6 +33,7 @@ public class HaEntityDto {
     private String currUnit;
     private String payload;
     private String recipientEmails;
+    private Long notificationTemplateId;
 
 
     @JsonIgnore
@@ -50,12 +52,12 @@ public class HaEntityDto {
             return false;
         }
 
-        if (prevTimestamp == null)
-            prevTimestamp = LocalDateTime.MIN;
+        if (lastNotified == null)
+            lastNotified = LocalDateTime.MIN;
 
         try {
             // Use system default zone to convert LocalDateTime -> Instant
-            Instant earlierInstant = prevTimestamp.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
+            Instant earlierInstant = lastNotified.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
             Instant laterInstant = currTimestamp.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
 
             if (notifyFreq.startsWith("PT")) {
@@ -64,7 +66,7 @@ public class HaEntityDto {
             }
 
             Period period = Period.parse(notifyFreq);
-            LocalDateTime threshold = prevTimestamp.plus(period);
+            LocalDateTime threshold = lastNotified.plus(period);
             Instant thresholdInstant = threshold.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
 
             return laterInstant.isAfter(thresholdInstant);

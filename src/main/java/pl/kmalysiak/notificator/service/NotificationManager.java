@@ -32,12 +32,11 @@ public class NotificationManager {
     }
 
     public void sendMsgToUsers(Set<String> logins, String type, String msgBody) {
-       for(String login :logins) {
-
-           List<String> tokens = userService.getFcmTokensForLogin(login);
-           if (CollectionUtils.isEmpty(tokens))
-               log.error("No tokens for login: " + login);
-           tokens.forEach(token -> notificationService.sendMessage(token, type, msgBody));
-       }
+        for (String login : logins) {
+            List<String> tokens = userService.getFcmTokensForLogin(login);
+            if (CollectionUtils.isEmpty(tokens))
+                log.error("No tokens for login: " + login);
+            tokens.forEach(token -> notificationService.sendMessage(token, type, msgBody));
+        }
     }
 }

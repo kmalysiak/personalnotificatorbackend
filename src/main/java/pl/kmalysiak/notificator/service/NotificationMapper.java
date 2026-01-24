@@ -18,6 +18,7 @@ import java.io.StringWriter;
 @Service
 @RequiredArgsConstructor
 public class NotificationMapper {
+    public static final String TEMPLATE_NAME = "dynamic";
     private final NotificationTemplateRepository repo;
     Configuration cfg = new Configuration(Configuration.VERSION_2_3_34);
     private  StringTemplateLoader loader;
@@ -31,27 +32,24 @@ public class NotificationMapper {
         cfg.setTemplateLoader(loader);
     }
 
-    public Pair<String, String> getNotificationTypeAndStatus(HaEntityDto entity) {
-        NotificationTemplateEntity templ = repo.findByEntityId(entity.getEntityId()).orElse(null);
+    public Pair<String, String> getNotificationTypeAndStatus(HaEntityDto dto) {
+        NotificationTemplateEntity templ = repo.findById(dto.getNotificationTemplateId()).orElse(null);
 
         if (templ == null)
             return null;
-
-        return Pair.of(render(templ.getTypeTemplate(), entity), render(templ.getStatusTemplate(), entity));
+        Pair.of(dto.getEntityFriendlyName(), render(templ.getStatusTemplate(), dto));
+        return Pair.of(dto.getEntityFriendlyName(), render(templ.getStatusTemplate(), dto));
 
 
     }
-
+    //mało wydajne kasowanie z cache, ale na te potrzeby wystarczy
     @SneakyThrows
     public String render(String templateStr, Object context) {
-
-        String templateName = "dynamic"; // stała nazwa w loaderze
-        loader.putTemplate(templateName, templateStr); // nadpisujemy aktualny template
-
-        Template template = cfg.getTemplate(templateName); // kompilacja nowego template
+        loader.putTemplate(TEMPLATE_NAME, templateStr);
+        cfg.removeTemplateFromCache(TEMPLATE_NAME);
+        Template template = cfg.getTemplate(TEMPLATE_NAME);
         StringWriter out = new StringWriter();
         template.process(context, out);
-
         return out.toString();
     }
 }

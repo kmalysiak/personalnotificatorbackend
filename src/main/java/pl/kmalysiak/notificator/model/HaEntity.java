@@ -27,6 +27,7 @@ public class HaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String entityId;
+    private String entityFriendlyName;
     private Long receivedCount;
     private Boolean notifyMobile;
     private LocalDateTime prevReceived;
@@ -43,4 +44,5 @@ public class HaEntity {
     @Column(columnDefinition = "TEXT")
     private String payload;
     private String recipientEmails;
+    public Long notificationTemplateId;
 }

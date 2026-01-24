@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 class NotificationMapperTest {
@@ -22,58 +23,49 @@ class NotificationMapperTest {
 
     private NotificationTemplateRepository templateRepository;
     private NotificationMapper notificationMapper;
+    private NotificationTemplateEntity ent = new NotificationTemplateEntity();
 
     @BeforeEach
-    void setup() {
+    public void suiteSetup() {
         templateRepository = Mockito.mock(NotificationTemplateRepository.class);
         this.notificationMapper = new NotificationMapper(templateRepository);
         notificationMapper.configureFreemarker();
-    }
 
-    @Test
-    void renderEventTemplate() throws Exception {
-        // Define template in test
-        NotificationTemplateEntity ent = new NotificationTemplateEntity();
         ent.setId(1L);
-        ent.setTypeTemplate(loadFile("binary_sensor.move_stairs_type.ftl"));
         ent.setStatusTemplate(loadFile("binary_sensor.move_stairs_status.ftl"));
 
 
-
-        // Mock repository to return our test template
-        when(templateRepository.findByEntityId("ent_xyz")).thenReturn(Optional.of(ent));
-
-        HaEntityDto haEnt = new HaEntityDto();
-        haEnt.setEntityId("ent_xyz");
-        haEnt.setCurrState("on");
-        haEnt.setCurrTimestamp(LocalDateTime.of(2022, 1,1,1,2,3,400));
-        Pair<String, String> res = notificationMapper.getNotificationTypeAndStatus(haEnt);
-
-
-        String expectedJson = "{ \"type\": \"sensor\", \"status\": \"on\" }";
-        //assertEquals(expectedJson, out.toString().trim());
     }
 
-//        @Test
-//        void renderEventTemplateWithMap() throws Exception {
-//            // Alternative: Map as scope
-//            String template = "{ \"type\": \"{{type}}\", \"status\": \"{{status}}\" }";
-//            when(templateRepository.getTemplateByType("sensor")).thenReturn(template);
-//
-//            Map<String,Object> eventMap = new HashMap<>();
-//            eventMap.put("type", "sensor");
-//            eventMap.put("status", "off");
-//
-//            String templateFromRepo = templateRepository.getTemplateByType("sensor");
-//            Mustache mustache = mustacheFactory.compile(new StringReader(templateFromRepo), "tpl");
-//
-//            StringWriter out = new StringWriter();
-//            mustache.execute(out, eventMap);
-//            out.flush();
-//
-//            String expectedJson = "{ \"type\": \"sensor\", \"status\": \"off\" }";
-//            assertEquals(expectedJson, out.toString().trim());
-//        }
+    @Test
+    public void shouldRenderTestWhenEntityStateAndIdIsKnown() {
+        // Mock repository to return our test template
+        when(templateRepository.findById(1L)).thenReturn(Optional.of(ent));
+        HaEntityDto haEnt = new HaEntityDto();
+        haEnt.setEntityId("weather.forecast_dom");
+        haEnt.setCurrState("on");
+        haEnt.setNotificationTemplateId(1L);
+        haEnt.setCurrTimestamp(LocalDateTime.of(2022, 1, 1, 1, 2, 3, 400));
+        Pair<String, String> res = notificationMapper.getNotificationTypeAndStatus(haEnt);
+
+        assertEquals("pogoda", res.getFirst());
+        assertEquals("otwarty", res.getSecond());
+    }
+
+    @Test
+    public void shouldRenderTestWhenEntityStateAndIdUnknown() {
+        // Mock repository to return our test template
+        when(templateRepository.findById(1L)).thenReturn(Optional.of(ent));
+        HaEntityDto haEnt = new HaEntityDto();
+        haEnt.setEntityId("unknown_id");
+        haEnt.setCurrState("some_strange_state");
+        haEnt.setNotificationTemplateId(1L);
+        haEnt.setCurrTimestamp(LocalDateTime.of(2022, 1, 1, 1, 2, 3, 400));
+        Pair<String, String> res = notificationMapper.getNotificationTypeAndStatus(haEnt);
+
+        assertEquals("unknown_id", res.getFirst());
+        assertEquals("some_strange_state", res.getSecond());
+    }
 
 
     public String loadFile(String fname) {
