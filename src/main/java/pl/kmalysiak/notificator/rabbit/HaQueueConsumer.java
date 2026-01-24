@@ -29,7 +29,7 @@ public class HaQueueConsumer {
         HaEntityDto dto = rks.updateHaEntityStateOnHaEvent(EventNotification.fromMessage(message));
         if (dto.shouldSendMobileNotification()) {
             Pair<String, String> typeAndBody = notificationCalculator.getNotificationTypeAndStatus(dto);
-            if(!"##no_notification##".equals(typeAndBody.getSecond())) {
+            if(typeAndBody!= null && !"##no_notification##".equals(typeAndBody.getSecond())) {
                 if ("all".equalsIgnoreCase(dto.getRecipientEmails()))
                     notificationManager.sendMsgToAllUsers(typeAndBody.getFirst(), typeAndBody.getSecond());
                 else if (!"none".equals(dto.getRecipientEmails()) && !dto.getRecipientEmailsAsSet().isEmpty()) {

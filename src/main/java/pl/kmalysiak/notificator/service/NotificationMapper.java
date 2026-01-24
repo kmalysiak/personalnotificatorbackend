@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import pl.kmalysiak.notificator.dto.HaEntityDto;
 import pl.kmalysiak.notificator.model.NotificationTemplateEntity;
 import pl.kmalysiak.notificator.repo.NotificationTemplateRepository;
-
+import org.apache.commons.lang3.StringUtils;
 import javax.annotation.PostConstruct;
 import java.io.StringWriter;
 
@@ -34,11 +34,10 @@ public class NotificationMapper {
 
     public Pair<String, String> getNotificationTypeAndStatus(HaEntityDto dto) {
         NotificationTemplateEntity templ = repo.findById(dto.getNotificationTemplateId()).orElse(null);
-
         if (templ == null)
             return null;
-        Pair.of(dto.getEntityFriendlyName(), render(templ.getStatusTemplate(), dto));
-        return Pair.of(dto.getEntityFriendlyName(), render(templ.getStatusTemplate(), dto));
+
+        return Pair.of(StringUtils.firstNonBlank(dto.getEntityFriendlyName(), dto.getEntityId(), "nieznany"), render(templ.getStatusTemplate(), dto));
 
 
     }

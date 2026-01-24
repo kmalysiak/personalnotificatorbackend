@@ -119,11 +119,62 @@
             <artifactId>freemarker</artifactId>
             <version>2.3.34</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.13.0</version>
+        </dependency>
+
     </dependencies>
 
     <build>
         <finalName>notificator-backend</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <groupId>pl.project13.maven</groupId>
+                <artifactId>git-commit-id-plugin</artifactId>
+                <version>4.9.10</version>
+                <configuration>
+                    <failOnNoGitDirectory>false</failOnNoGitDirectory>
+                    <gitBranch>unknown</gitBranch>
+                    <generateGitPropertiesFile>false</generateGitPropertiesFile>
+                    <injectIntoMavenPom>true</injectIntoMavenPom>
+                    <dateFormat>yyyy-MM-dd'T'HH:mm:ss</dateFormat>
+                    <includeBuildTime>true</includeBuildTime>
+                </configuration>
+
+                <executions>
+                    <execution>
+                        <id>generate-git-properties</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+
+            </plugin>
+
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <version>3.3.0</version>
+                <configuration>
+                    <delimiters>
+                        <delimiter>@@</delimiter>
+                    </delimiters>
+                    <useDefaultDelimiters>false</useDefaultDelimiters>
+                </configuration>
+            </plugin>
+
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -149,6 +200,8 @@
                         </goals>
                     </execution>
                 </executions>
+
+
             </plugin>
 
             <plugin>
@@ -198,7 +251,6 @@
                     </to>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
