@@ -32,9 +32,9 @@ queue:
 admin:
   email: ${ADMIN_EMAIL}
 
-build.branch: @@git.branch@@
-build.number: @@git.commit.id.abbrev@@
-build.timestamp: @@git.build.time@@
+build.branch: "@@git.branch@@"
+build.number: "@@git.commit.id.abbrev@@"
+build.timestamp: "@@git.build.time@@"
 
 
 

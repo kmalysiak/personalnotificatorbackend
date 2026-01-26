@@ -1,4 +1,4 @@
 package pl.kmalysiak.notificator.model;
 
-public record SendRequest(String uid, String type, String msg) {
+public record SendRequest(String uid, NotificationData nd) {
 }

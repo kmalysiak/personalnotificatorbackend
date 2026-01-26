@@ -11,6 +11,7 @@ import pl.kmalysiak.notificator.utils.CustomObjectMapper;
 import pl.kmalysiak.notificator.model.HaEntity;
 import pl.kmalysiak.notificator.rabbit.model.EventNotification;
 import pl.kmalysiak.notificator.repo.HaEventRepository;
+import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -42,7 +43,7 @@ public class HaEventService {
         }
 
         dbRk.setPrevReceived(dbRk.getCurrReceived());
-        dbRk.setCurrReceived(LocalDateTime.now());
+        dbRk.setCurrReceived(TimeZoneUtils.getLocalDateTimeNow());
 
         dbRk.setPrevTimestamp(dbRk.getCurrTimestamp());
         dbRk.setCurrTimestamp(en.getTimestamp());
@@ -58,6 +59,14 @@ public class HaEventService {
         dbRk.setReceivedCount(dbRk.getReceivedCount() + 1);
 
         return CustomObjectMapper.mapObject(repo.save(dbRk), HaEntityDto.class);
+    }
+
+    public void updateLastNotified(String entId){
+        Optional<HaEntity> rk = repo.findByEntityId(entId);
+        if(rk.isPresent()){
+            rk.get().setLastNotified(TimeZoneUtils.getLocalDateTimeNow());
+            repo.save(rk.get());
+        }
     }
 
     public boolean isRoutingKeyExist(String name) {

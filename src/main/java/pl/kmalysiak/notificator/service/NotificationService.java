@@ -5,20 +5,16 @@ import com.google.auth.oauth2.GoogleCredentials;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
 import pl.kmalysiak.notificator.model.Notification;
 import pl.kmalysiak.notificator.model.NotificationData;
 import pl.kmalysiak.notificator.model.NotificationMeta;
-import pl.kmalysiak.notificator.model.SendRequest;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,7 +33,7 @@ public class NotificationService {
     }
 
     @SneakyThrows
-    public void sendMessage(String fcmToken, String data, String msg) {
+    public void sendMessage(String fcmToken, NotificationData nd) {
         credentials.refreshIfExpired();
         String accessToken = credentials.getAccessToken().getTokenValue();
 
@@ -47,7 +43,7 @@ public class NotificationService {
         conn.setRequestProperty("Authorization", "Bearer " + accessToken);
         conn.setRequestProperty("Content-Type", "application/json; UTF-8");
         conn.setDoOutput(true);
-        Notification not = new Notification(fcmToken, new NotificationData(data, msg), new NotificationMeta("high"));
+        Notification not = new Notification(fcmToken, nd, new NotificationMeta("high"));
         Map<String, Object> message = Map.of("message", not);
         String body = mapper.writeValueAsString(message);
         log.info("Sending:{}", body);

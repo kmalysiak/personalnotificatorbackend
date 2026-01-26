@@ -10,8 +10,8 @@ import pl.kmalysiak.notificator.rabbit.RabbitPublisher;
 import pl.kmalysiak.notificator.rabbit.model.SingleUidNotification;
 import pl.kmalysiak.notificator.service.TokenVerifierService;
 import pl.kmalysiak.notificator.service.UserService;
+import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
-import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 @RestController
@@ -30,7 +30,7 @@ public class AuthController {
         GuidResult uidRes = verifier.verifyAndGetUid(idToken);
 
         if (uidRes.isOk()) {
-            userService.saveUserToken(uidRes.guid(), request.fcmToken(), request.login() , LocalDateTime.now());
+            userService.saveUserToken(uidRes.guid(), request.fcmToken(), request.login() , TimeZoneUtils.getLocalDateTimeNow());
             rabbitPublisher.pushUserUpdateNotification(new SingleUidNotification(uidRes.guid(), "User logged in:" + request.login()));
             return new RegisterResult(true, "");
         } else {
@@ -41,7 +41,7 @@ public class AuthController {
 
     @GetMapping("/heartbeat")
     public String heartbeat() {
-        return "Behold! So... The essence of the world is: " + LocalDateTime.now().toEpochSecond(ZoneOffset.UTC);
+        return "Behold! So... The essence of the world is: " + TimeZoneUtils.getLocalDateTimeNow().toEpochSecond(ZoneOffset.UTC);
     }
 
 }

@@ -6,7 +6,6 @@ import lombok.SneakyThrows;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 
 public final class CustomObjectMapper {
 
@@ -37,7 +36,7 @@ public final class CustomObjectMapper {
                         // 2026-01-10T16:38:03.312727
                         // 2026-01-10T16:38:03.312727+00:00
                         if (value.endsWith("Z") || value.contains("+")) {
-                            return OffsetDateTime.parse(value).atZoneSameInstant(TimeZoneDefinition.TIME_Z_WARSAW).toLocalDateTime();
+                            return OffsetDateTime.parse(value).atZoneSameInstant(TimeZoneUtils.TIME_Z_WARSAW).toLocalDateTime();
                         }
                         return LocalDateTime.parse(value);
                     }

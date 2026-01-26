@@ -3,9 +3,7 @@ package pl.kmalysiak.notificator.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import org.springframework.data.util.Pair;
-import pl.kmalysiak.notificator.service.NotificationMapper;
-import pl.kmalysiak.notificator.utils.TimeZoneDefinition;
+import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
 import java.time.*;
 import java.util.Arrays;
@@ -18,6 +16,7 @@ public class HaEntityDto {
     private Long id;
     private String entityId;
     private String entityFriendlyName;
+    private String entityType;
     private Long receivedCount;
     private Boolean notifyMobile;
     private LocalDateTime prevReceived;
@@ -57,8 +56,8 @@ public class HaEntityDto {
 
         try {
             // Use system default zone to convert LocalDateTime -> Instant
-            Instant earlierInstant = lastNotified.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
-            Instant laterInstant = currTimestamp.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
+            Instant earlierInstant = lastNotified.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
+            Instant laterInstant = currTimestamp.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
 
             if (notifyFreq.startsWith("PT")) {
                 Duration limit = Duration.parse(notifyFreq);
@@ -67,7 +66,7 @@ public class HaEntityDto {
 
             Period period = Period.parse(notifyFreq);
             LocalDateTime threshold = lastNotified.plus(period);
-            Instant thresholdInstant = threshold.atZone(TimeZoneDefinition.TIME_Z_WARSAW).toInstant();
+            Instant thresholdInstant = threshold.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
 
             return laterInstant.isAfter(thresholdInstant);
 
@@ -77,6 +76,10 @@ public class HaEntityDto {
     }
 
 
+    @JsonIgnore
+    public Long getUtcTimestamp() {
+       return TimeZoneUtils.toUtcTimestamp(currTimestamp);
+    }
 }
 
 

@@ -7,11 +7,12 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import pl.kmalysiak.notificator.controller.PushNotificationController;
+import pl.kmalysiak.notificator.model.NotificationData;
 import pl.kmalysiak.notificator.model.SendRequest;
 import pl.kmalysiak.notificator.model.UserToken;
 import pl.kmalysiak.notificator.service.UserService;
+import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Service
@@ -33,7 +34,7 @@ public class Watch {
 
     @Scheduled(cron = "0 */5 * * * *")
     public void checkTime() {
-        String ldtNow = LocalDateTime.now().format(formatter);
+        String ldtNow =TimeZoneUtils.getLocalDateTimeNow().format(formatter);
         log.info("RunningCron:{}", ldtNow);
 
         if("note_specified".equals(adminEmail)) {
@@ -47,6 +48,6 @@ public class Watch {
                 .map(UserToken::getGuid)
                 .distinct()
                 .forEach(guid ->
-                        pushNotificationController.send(new SendRequest(guid, ldtNow, "watch")));
+                        pushNotificationController.send(new SendRequest(guid, new NotificationData("kron", "cron", "Kron przeszedł", TimeZoneUtils.epochSecondsNow()))));
     }
 }

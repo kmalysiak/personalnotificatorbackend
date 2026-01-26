@@ -28,10 +28,11 @@ public class HaEntity {
     private Long id;
     private String entityId;
     private String entityFriendlyName;
+    private String entityType;
     private Long receivedCount;
     private Boolean notifyMobile;
     private LocalDateTime prevReceived;
-    private LocalDateTime currReceived;
+    private LocalDateTime currReceived; //generalnie LocalDateTimeNow
     private LocalDateTime prevTimestamp;
     private LocalDateTime currTimestamp;
     private LocalDateTime lastNotified;

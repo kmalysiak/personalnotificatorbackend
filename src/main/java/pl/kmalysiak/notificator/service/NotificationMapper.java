@@ -6,14 +6,17 @@ import freemarker.template.Template;
 import freemarker.template.TemplateExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.data.util.Pair;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pl.kmalysiak.notificator.dto.HaEntityDto;
+import pl.kmalysiak.notificator.model.NotificationData;
 import pl.kmalysiak.notificator.model.NotificationTemplateEntity;
 import pl.kmalysiak.notificator.repo.NotificationTemplateRepository;
-import org.apache.commons.lang3.StringUtils;
+import pl.kmalysiak.notificator.utils.TimeZoneUtils;
+
 import javax.annotation.PostConstruct;
 import java.io.StringWriter;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +24,10 @@ public class NotificationMapper {
     public static final String TEMPLATE_NAME = "dynamic";
     private final NotificationTemplateRepository repo;
     Configuration cfg = new Configuration(Configuration.VERSION_2_3_34);
-    private  StringTemplateLoader loader;
+    private StringTemplateLoader loader;
+
     @PostConstruct
-    public void configureFreemarker(){
+    public void configureFreemarker() {
         cfg.setDefaultEncoding("UTF-8");
         cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
         cfg.setLogTemplateExceptions(false);
@@ -32,15 +36,33 @@ public class NotificationMapper {
         cfg.setTemplateLoader(loader);
     }
 
-    public Pair<String, String> getNotificationTypeAndStatus(HaEntityDto dto) {
-        NotificationTemplateEntity templ = repo.findById(dto.getNotificationTemplateId()).orElse(null);
-        if (templ == null)
-            return null;
+    public NotificationData getEntFriendlyNameAndMsgContentForNotification(HaEntityDto dto) {
 
-        return Pair.of(StringUtils.firstNonBlank(dto.getEntityFriendlyName(), dto.getEntityId(), "nieznany"), render(templ.getStatusTemplate(), dto));
+        String statusTempl = Optional
+                .ofNullable(dto.getNotificationTemplateId())
+                .flatMap(repo::findById)
+                .map(NotificationTemplateEntity::getStatusTemplate)
+                .orElse(getDefTempl());
 
+
+        return new NotificationData(
+                StringUtils.firstNonBlank(dto.getEntityFriendlyName(), dto.getEntityId(), "nieznany"),
+                StringUtils.firstNonBlank(dto.getEntityType(), dto.getEntityFriendlyName(), dto.getEntityId(), "nieznany"),
+                render(statusTempl, dto),
+                TimeZoneUtils.toEpochSeconds(dto.getCurrTimestamp())
+
+        );
+    }
+
+    private String getDefTempl() {
+       return ("""
+                ${{
+                'on'      : 'włączony',
+                'off'     : 'wyłączony'
+                }[currState]! currState}""");
 
     }
+
     //mało wydajne kasowanie z cache, ale na te potrzeby wystarczy
     @SneakyThrows
     public String render(String templateStr, Object context) {
