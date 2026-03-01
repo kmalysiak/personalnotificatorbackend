@@ -51,13 +51,14 @@ public class HaEntityDto {
             return false;
         }
 
-        if (lastNotified == null)
-            lastNotified = LocalDateTime.MIN;
+        if (prevTimestamp == null)
+            prevTimestamp = LocalDateTime.MIN;
 
         try {
             // Use system default zone to convert LocalDateTime -> Instant
-            Instant earlierInstant = lastNotified.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
+            Instant earlierInstant = prevTimestamp.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
             Instant laterInstant = currTimestamp.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
+
 
             if (notifyFreq.startsWith("PT")) {
                 Duration limit = Duration.parse(notifyFreq);
@@ -65,7 +66,7 @@ public class HaEntityDto {
             }
 
             Period period = Period.parse(notifyFreq);
-            LocalDateTime threshold = lastNotified.plus(period);
+            LocalDateTime threshold = prevTimestamp.plus(period);
             Instant thresholdInstant = threshold.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
 
             return laterInstant.isAfter(thresholdInstant);

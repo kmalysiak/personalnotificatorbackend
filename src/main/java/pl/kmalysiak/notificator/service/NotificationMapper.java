@@ -10,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import pl.kmalysiak.notificator.dto.HaEntityDto;
 import pl.kmalysiak.notificator.model.NotificationData;
-import pl.kmalysiak.notificator.model.NotificationTemplateEntity;
-import pl.kmalysiak.notificator.repo.NotificationTemplateRepository;
+import pl.kmalysiak.notificator.model.entity.NotificationTemplateEntity;
+import pl.kmalysiak.notificator.repo.NotificationTemplateRepo;
 import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class NotificationMapper {
     public static final String TEMPLATE_NAME = "dynamic";
-    private final NotificationTemplateRepository repo;
+    private final NotificationTemplateRepo repo;
     Configuration cfg = new Configuration(Configuration.VERSION_2_3_34);
     private StringTemplateLoader loader;
 

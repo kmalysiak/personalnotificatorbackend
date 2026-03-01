@@ -1,4 +1,4 @@
-package pl.kmalysiak.notificator.model;
+package pl.kmalysiak.notificator.model.entity;
 
 
 import jakarta.persistence.*;

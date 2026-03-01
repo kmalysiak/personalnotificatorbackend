@@ -7,13 +7,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pl.kmalysiak.notificator.dto.HaEntityDto;
-import pl.kmalysiak.notificator.utils.CustomObjectMapper;
-import pl.kmalysiak.notificator.model.HaEntity;
+import pl.kmalysiak.notificator.model.entity.HaEntity;
 import pl.kmalysiak.notificator.rabbit.model.EventNotification;
-import pl.kmalysiak.notificator.repo.HaEventRepository;
+import pl.kmalysiak.notificator.repo.HaEntityRepo;
+import pl.kmalysiak.notificator.utils.CustomObjectMapper;
 import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -21,7 +20,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class HaEventService {
-    private final HaEventRepository repo;
+    private final HaEntityRepo repo;
     private static final ObjectMapper mapper = new ObjectMapper();
 
     @Transactional

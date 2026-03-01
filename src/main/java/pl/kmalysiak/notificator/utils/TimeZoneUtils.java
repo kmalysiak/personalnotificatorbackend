@@ -17,6 +17,13 @@ public class TimeZoneUtils {
         return String.valueOf(Instant.now().getEpochSecond());
     }
 
+    public static LocalDateTime epochSecondsToLocalDateTime(String epochSeconds) {
+
+        return Instant.ofEpochSecond(Long.valueOf(epochSeconds))
+                .atZone(TIME_Z_WARSAW)
+                .toLocalDateTime();
+    }
+
     public static Long toUtcTimestamp(LocalDateTime timeStamp) {
         return Optional.ofNullable(timeStamp).map(c -> {
             ZoneOffset offset = TimeZoneUtils.TIME_Z_WARSAW.getRules().getOffset(timeStamp);

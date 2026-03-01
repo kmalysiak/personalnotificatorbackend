@@ -1,3 +1,6 @@
+
+
+
 firebase:
   project-id: ${PROJECT_ID}
   credentials: ${CRED_FILE}
@@ -10,10 +13,12 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+  main:
+    banner-mode: console
 
 rabbit:
   host: ${RABBIT_HOST}
@@ -32,18 +37,18 @@ queue:
 admin:
   email: ${ADMIN_EMAIL}
 
-build.branch: "@@git.branch@@"
-build.number: "@@git.commit.id.abbrev@@"
-build.timestamp: "@@git.build.time@@"
+
+
 
 
 
 logging:
   level:
-    org.springframework.amqp: DEBUG
-    org.springframework.amqp.rabbit: DEBUG
-    com.rabbitmq: DEBUG
-    org.springframework.retry: DEBUG
-    org.springframework.boot.autoconfigure.amqp: DEBUG
+    org.springframework.amqp: INFO
+    org.springframework.amqp.rabbit: INFO
+    com.rabbitmq: INFO
+    org.springframework.retry: INFO
+    org.springframework.boot.autoconfigure.amqp: INFO
+    pl.kmalysiak: DEBUG
 
 

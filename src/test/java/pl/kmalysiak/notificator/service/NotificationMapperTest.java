@@ -3,11 +3,10 @@ package pl.kmalysiak.notificator.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
-import org.springframework.data.util.Pair;
 import pl.kmalysiak.notificator.dto.HaEntityDto;
 import pl.kmalysiak.notificator.model.NotificationData;
-import pl.kmalysiak.notificator.model.NotificationTemplateEntity;
-import pl.kmalysiak.notificator.repo.NotificationTemplateRepository;
+import pl.kmalysiak.notificator.model.entity.NotificationTemplateEntity;
+import pl.kmalysiak.notificator.repo.NotificationTemplateRepo;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,13 +21,13 @@ import static org.mockito.Mockito.when;
 class NotificationMapperTest {
 
 
-    private NotificationTemplateRepository templateRepository;
+    private NotificationTemplateRepo templateRepository;
     private NotificationMapper notificationMapper;
     private NotificationTemplateEntity ent = new NotificationTemplateEntity();
 
     @BeforeEach
     public void suiteSetup() {
-        templateRepository = Mockito.mock(NotificationTemplateRepository.class);
+        templateRepository = Mockito.mock(NotificationTemplateRepo.class);
         this.notificationMapper = new NotificationMapper(templateRepository);
         notificationMapper.configureFreemarker();
 
