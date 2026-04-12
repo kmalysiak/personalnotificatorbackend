@@ -66,4 +66,14 @@ public final class CustomObjectMapper {
     public static ObjectMapper get() {
         return MAPPER;
     }
+
+    @SneakyThrows
+    public static JsonNode readTree(String payload) {
+        return MAPPER.readTree(payload);
+    }
+
+    @SneakyThrows
+    public static String writeValueAsString(Object payload) {
+        return MAPPER.writeValueAsString(payload);
+    }
 }

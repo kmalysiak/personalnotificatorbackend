@@ -37,7 +37,9 @@ queue:
 admin:
   email: ${ADMIN_EMAIL}
 
-
+ws:
+  broadcast:
+    interval: 10
 
 
 
