@@ -1,0 +1,36 @@
+package pl.kmalysiak.notificator;
+
+import com.google.auth.oauth2.GoogleCredentials;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.FirebaseOptions;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
+
+import java.io.IOException;
+
+@Configuration
+public class FirebaseConfig {
+    @Value("${firebase.project-id}")
+    String projectId;
+    @Value("${firebase.credentials}")
+    String credentialsPath;
+
+
+    @Bean
+    public FirebaseApp firebaseApp() throws IOException {
+        if (!FirebaseApp.getApps().isEmpty()) {
+            return FirebaseApp.getInstance();
+        }
+        GoogleCredentials credentials = GoogleCredentials
+                .fromStream(new ClassPathResource(credentialsPath).getInputStream())
+                .createScoped("https://www.googleapis.com/auth/firebase.messaging");
+
+        FirebaseOptions options = FirebaseOptions.builder()
+                .setCredentials(credentials)
+                .build();
+
+        return FirebaseApp.initializeApp(options);
+    }
+}

@@ -79,7 +79,7 @@ public class HaEntityDto {
 
     @JsonIgnore
     public Long getUtcTimestamp() {
-       return TimeZoneUtils.toUtcTimestamp(currTimestamp);
+        return TimeZoneUtils.toUtcTimestamp(currTimestamp);
     }
 }
 

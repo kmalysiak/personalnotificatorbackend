@@ -1,4 +1,5 @@
 package pl.kmalysiak.notificator.utils;
+
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -11,7 +12,8 @@ public final class CustomObjectMapper {
 
     private static final ObjectMapper MAPPER = create();
 
-    private CustomObjectMapper() {}
+    private CustomObjectMapper() {
+    }
 
     private static ObjectMapper create() {
         ObjectMapper mapper = new ObjectMapper();
@@ -53,12 +55,12 @@ public final class CustomObjectMapper {
     }
 
     @SneakyThrows
-     public static <T> T fromJson(String str, Class<T> clz){
-         return get().readValue(str, clz);
+    public static <T> T fromJson(String str, Class<T> clz) {
+        return get().readValue(str, clz);
     }
 
     @SneakyThrows
-    public static <T> T mapObject(Object obj, Class<T> clz){
+    public static <T> T mapObject(Object obj, Class<T> clz) {
         String str = MAPPER.writeValueAsString(obj);
         return MAPPER.readValue(str, clz);
     }

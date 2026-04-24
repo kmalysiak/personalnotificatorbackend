@@ -1,3 +1,4 @@
 package pl.kmalysiak.notificator.model;
 
-public record RegisterResult(boolean isRegister, String errrorDesc){}
+public record RegisterResult(boolean isRegister, String errrorDesc) {
+}

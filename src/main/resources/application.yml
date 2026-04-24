@@ -1,6 +1,3 @@
-
-
-
 firebase:
   project-id: ${PROJECT_ID}
   credentials: ${CRED_FILE}
@@ -28,7 +25,7 @@ rabbit:
 
 jobs:
   watch:
-   enabled: false
+    enabled: false
 
 queue:
   test: test_queue
@@ -39,7 +36,7 @@ admin:
 
 ws:
   broadcast:
-    interval: 10
+    interval: ${WS_BS_INT}
 
 
 
@@ -51,6 +48,7 @@ logging:
     com.rabbitmq: INFO
     org.springframework.retry: INFO
     org.springframework.boot.autoconfigure.amqp: INFO
+    pl.kmalysiak.notificator.rabbit: INFO
     pl.kmalysiak: DEBUG
 
 

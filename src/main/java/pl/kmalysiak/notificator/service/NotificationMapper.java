@@ -55,7 +55,7 @@ public class NotificationMapper {
     }
 
     private String getDefTempl() {
-       return ("""
+        return ("""
                 ${{
                 'on'      : 'włączony',
                 'off'     : 'wyłączony'

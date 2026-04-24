@@ -11,16 +11,9 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.retry.backoff.FixedBackOffPolicy;
-import org.springframework.retry.policy.SimpleRetryPolicy;
-import org.springframework.retry.support.RetryTemplate;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 
 @Configuration
 public class ConnectionConfig {
@@ -56,10 +49,11 @@ public class ConnectionConfig {
         return template;
     }
 
-
     @Bean
     public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(
-            CachingConnectionFactory connectionFactory) {
+            CachingConnectionFactory connectionFactory,
+            MessageConverter messageConverter
+    ) {
 
         SimpleRabbitListenerContainerFactory factory =
                 new SimpleRabbitListenerContainerFactory();
@@ -68,7 +62,7 @@ public class ConnectionConfig {
         factory.setConcurrentConsumers(1);
         factory.setMaxConcurrentConsumers(1);
         factory.setAcknowledgeMode(AcknowledgeMode.AUTO);
-
+        factory.setMessageConverter(messageConverter);
         return factory;
     }
 

@@ -2,7 +2,6 @@ package pl.kmalysiak.notificator.service;
 
 
 import com.github.f4b6a3.ulid.UlidCreator;
-
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;

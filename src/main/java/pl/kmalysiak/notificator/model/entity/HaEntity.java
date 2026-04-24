@@ -23,6 +23,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class HaEntity {
+    public Long notificationTemplateId;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -45,5 +46,4 @@ public class HaEntity {
     @Column(columnDefinition = "TEXT")
     private String payload;
     private String recipientEmails;
-    public Long notificationTemplateId;
 }

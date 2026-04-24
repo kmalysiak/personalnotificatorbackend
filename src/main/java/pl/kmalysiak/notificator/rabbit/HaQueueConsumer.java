@@ -45,7 +45,7 @@ public class HaQueueConsumer {
 
             NotificationData nd = notificationCalculator.getEntFriendlyNameAndMsgContentForNotification(dto);
             if ("##no_notification##".equals(nd.msg())) {
-                log.debug("nie wysłano powiadomienia mobile dla encji:{}, rec:{}, timestamp:{}, z uwagi na stan:{}", dto.getEntityId(),  dto.getCurrTimestamp(), dto.getCurrReceived(), dto.getCurrState());
+                log.debug("nie wysłano powiadomienia mobile dla encji:{}, rec:{}, timestamp:{}, z uwagi na stan:{}", dto.getEntityId(), dto.getCurrTimestamp(), dto.getCurrReceived(), dto.getCurrState());
                 return;
             }
 
@@ -57,7 +57,7 @@ public class HaQueueConsumer {
             log.info("wysyłka powiadomienia do:{}", dto.getRecipientEmails());
             if ("all".equalsIgnoreCase(dto.getRecipientEmails())) {
                 logService.addToLog(nd, "all");
-                notificationManager.sendMsgToAllUsers(nd);
+                notificationManager.sendMsgToAllUsersViaWs(nd);
                 rks.updateLastNotified(dto.getEntityId());
             } else {
                 logService.addToLog(nd, dto.getRecipientEmails());

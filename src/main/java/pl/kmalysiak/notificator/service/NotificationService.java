@@ -1,61 +1,80 @@
 package pl.kmalysiak.notificator.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.auth.oauth2.GoogleCredentials;
-import lombok.SneakyThrows;
+import com.google.firebase.messaging.*;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import pl.kmalysiak.notificator.model.Notification;
+import org.springframework.web.socket.WebSocketSession;
 import pl.kmalysiak.notificator.model.NotificationData;
-import pl.kmalysiak.notificator.model.NotificationMeta;
+import pl.kmalysiak.notificator.service.ws.NotificationHandler;
 
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class NotificationService {
 
-    private final String projectId;
-    private final GoogleCredentials credentials;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final NotificationHandler handler;
 
-    public NotificationService(@Value("${firebase.project-id}") String projectId, @Value("${firebase.credentials}") String credentialsPath) throws IOException {
+    public void sendMessage(String fcmToken, NotificationData nd, String colapseKey, long ttl) {
 
-        this.projectId = projectId;
-        FileInputStream resource = new FileInputStream(credentialsPath);
-        this.credentials = GoogleCredentials.fromStream(resource).createScoped("https://www.googleapis.com/auth/firebase.messaging");
-    }
+        // konwertuj nd do Map<String, String> — FCM data payload wymaga String wartości
+        Map<String, String> dataMap = mapper.convertValue(nd, new TypeReference<>() {
+        });
 
-    @SneakyThrows
-    public void sendMessage(String fcmToken, NotificationData nd) {
-        credentials.refreshIfExpired();
-        String accessToken = credentials.getAccessToken().getTokenValue();
+        AndroidConfig.Builder acb = AndroidConfig.builder()
+                .setPriority(AndroidConfig.Priority.HIGH);
 
-        URL url = new URL("https://fcm.googleapis.com/v1/projects/" + projectId + "/messages:send");
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setRequestMethod("POST");
-        conn.setRequestProperty("Authorization", "Bearer " + accessToken);
-        conn.setRequestProperty("Content-Type", "application/json; UTF-8");
-        conn.setDoOutput(true);
-        Notification not = new Notification(fcmToken, nd, new NotificationMeta("high"));
-        Map<String, Object> message = Map.of("message", not);
-        String body = mapper.writeValueAsString(message);
-        log.info("Sending:{}", body);
-        conn.getOutputStream().write(body.getBytes(StandardCharsets.UTF_8));
-        int responseCode = conn.getResponseCode();
+        if(colapseKey != null){
+            acb.setCollapseKey(colapseKey);
+        }
+        if(ttl != -1){
+            acb.setTtl(ttl);
+        }
 
-        if (responseCode != 200) {
-            throw new IOException("FCM Error: " + responseCode + " - " + conn.getResponseMessage());
-        } else {
-            log.info("Sent:" + responseCode);
+        Message message = Message.builder()
+                .setToken(fcmToken)
+                .putAllData(dataMap)
+                .setAndroidConfig(
+                    acb.build()
+                )
+                .build();
+
+
+        try {
+            String messageId = FirebaseMessaging.getInstance().send(message);
+            log.info("FCM sent ok: messageId={}, token={}", messageId, fcmToken);
+
+        } catch (FirebaseMessagingException e) {
+            MessagingErrorCode code = e.getMessagingErrorCode();
+            log.warn("FCM send failed: code={}, token={}, msg={}", code, fcmToken, e.getMessage());
+
+            throw switch (code) {
+                case UNREGISTERED, INVALID_ARGUMENT ->
+                        new FcmException(FcmException.ErrorCode.INVALID_TOKEN, "Token invalid/unregistered: " + fcmToken, e);
+
+                case QUOTA_EXCEEDED -> new FcmException(FcmException.ErrorCode.RATE_LIMITED, "FCM rate limited", e);
+                case UNAVAILABLE, INTERNAL ->
+                        new FcmException(FcmException.ErrorCode.TRANSIENT, "FCM transient error: " + code, e);
+                default -> new FcmException(FcmException.ErrorCode.UNKNOWN, "FCM error: " + code, e);
+            };
         }
     }
 
 
+    public void sendMessageWsChannel(WebSocketSession session, NotificationData nd) {
+        Map<String, String> dataMap = mapper.convertValue(nd, new TypeReference<>() {});
+        try {
+            handler.sendMessage(session, dataMap);
+        } catch (IOException e) {
+            log.error("Błąd broadcast do session={}", session.getId(), e);
+        }
+    }
 }
+
+

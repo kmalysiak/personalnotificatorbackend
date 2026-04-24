@@ -20,8 +20,38 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class HaEventService {
-    private final HaEntityRepo repo;
     private static final ObjectMapper mapper = new ObjectMapper();
+    private final HaEntityRepo repo;
+
+    public static String addValue(String jsonColumn, String newValue, int maxSize) {
+        List<String> list;
+
+        try {
+            if (jsonColumn == null || jsonColumn.isEmpty()) {
+                list = new ArrayList<>();
+            } else {
+                list = mapper.readValue(jsonColumn, new TypeReference<List<String>>() {
+                });
+            }
+        } catch (Exception e) {
+            // fallback if parsing fails
+            list = new ArrayList<>();
+        }
+
+        // Add new value
+        list.add(newValue);
+
+        // Ensure max size
+        while (list.size() > maxSize) {
+            list.remove(0); // remove oldest
+        }
+
+        try {
+            return mapper.writeValueAsString(list);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to serialize JSON list", e);
+        }
+    }
 
     @Transactional
     public HaEntityDto updateHaEntityStateOnHaEvent(EventNotification en) {
@@ -60,9 +90,9 @@ public class HaEventService {
         return CustomObjectMapper.mapObject(repo.save(dbRk), HaEntityDto.class);
     }
 
-    public void updateLastNotified(String entId){
+    public void updateLastNotified(String entId) {
         Optional<HaEntity> rk = repo.findByEntityId(entId);
-        if(rk.isPresent()){
+        if (rk.isPresent()) {
             rk.get().setLastNotified(TimeZoneUtils.getLocalDateTimeNow());
             repo.save(rk.get());
         }
@@ -74,37 +104,6 @@ public class HaEventService {
 
     public List<HaEntity> getAllRoutingKeys() {
         return repo.findAll();
-    }
-
-
-    public static String addValue(String jsonColumn, String newValue, int maxSize) {
-        List<String> list;
-
-        try {
-            if (jsonColumn == null || jsonColumn.isEmpty()) {
-                list = new ArrayList<>();
-            } else {
-                list = mapper.readValue(jsonColumn, new TypeReference<List<String>>() {
-                });
-            }
-        } catch (Exception e) {
-            // fallback if parsing fails
-            list = new ArrayList<>();
-        }
-
-        // Add new value
-        list.add(newValue);
-
-        // Ensure max size
-        while (list.size() > maxSize) {
-            list.remove(0); // remove oldest
-        }
-
-        try {
-            return mapper.writeValueAsString(list);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to serialize JSON list", e);
-        }
     }
 }
 

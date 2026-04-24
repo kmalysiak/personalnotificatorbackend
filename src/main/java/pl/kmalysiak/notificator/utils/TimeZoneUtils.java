@@ -33,9 +33,6 @@ public class TimeZoneUtils {
 
 
     public static String toEpochSeconds(LocalDateTime timeStamp) {
-        return Optional.ofNullable(timeStamp).map(c -> {
-            ZoneOffset offset = TimeZoneUtils.TIME_Z_WARSAW.getRules().getOffset(timeStamp);
-            return String.valueOf(timeStamp.toEpochSecond(offset));
-        }).orElse(null);
+        return Optional.ofNullable(timeStamp).map(c -> String.valueOf(c.atZone(TIME_Z_WARSAW).toEpochSecond())).orElse(null);
     }
 }

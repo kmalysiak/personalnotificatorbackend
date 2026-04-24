@@ -7,10 +7,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import pl.kmalysiak.notificator.model.GuidResult;
-import pl.kmalysiak.notificator.model.RegisterResult;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -21,7 +19,7 @@ public class TokenVerifierService {
     private final GoogleCredentials credentials;
 
     public TokenVerifierService(@Value("${firebase.credentials}") String credentialsPath) throws IOException {
-         FileInputStream resource = new FileInputStream(credentialsPath);
+        FileInputStream resource = new FileInputStream(credentialsPath);
         this.credentials = GoogleCredentials
                 .fromStream(resource);
 
@@ -32,18 +30,18 @@ public class TokenVerifierService {
         FirebaseApp.initializeApp(options);
     }
 
-    public GuidResult verifyAndGetUid(String idTokenString) throws Exception {
+    public GuidResult verifyAndGetUid(String idTokenString) {
         try {
             FirebaseToken token = FirebaseAuth.getInstance().verifyIdToken(idTokenString);
             Map<String, Object> firebase = (Map<String, Object>) token.getClaims().get("firebase");
             String signInProvider = (String) firebase.get("sign_in_provider");
             if ("password".equals(signInProvider)) {
-                return new GuidResult(true, token.getUid(), "");
+                return new GuidResult(true, token.getUid(), token.getEmail(), "");
             } else {
-                return new GuidResult(false, "", "not authorized");
+                return new GuidResult(false, "", "", "not authorized");
             }
-        } catch (FirebaseAuthException e ){
-            return new GuidResult(false, "", "not authorized");
+        } catch (FirebaseAuthException e) {
+            return new GuidResult(false, "", "", "not authorized");
         }
     }
 }

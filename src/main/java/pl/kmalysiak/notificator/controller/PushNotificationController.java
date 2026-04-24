@@ -24,10 +24,10 @@ public class PushNotificationController {
     }
 
 
-    @PostMapping("/sendAll")
-    public void sendAll(@RequestBody NotificationData nd) {
-        notificationManager.sendMsgToAllUsers(nd);
-    }
+//    @PostMapping("/sendAll")
+//    public void sendAll(@RequestBody NotificationData nd) {
+//        notificationManager.sendMsgToAllUsers(nd);
+//    }
 
     @GetMapping("/heartbeat")
     public String heartbeat() {
