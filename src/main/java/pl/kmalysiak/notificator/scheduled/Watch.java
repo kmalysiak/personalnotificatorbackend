@@ -48,6 +48,6 @@ public class Watch {
                 .map(UserToken::getUserFirebaseGuid)
                 .distinct()
                 .forEach(guid ->
-                        pushNotificationController.send(new SendRequest(guid, new NotificationData("kron", "cron", "Kron przeszedł", TimeZoneUtils.epochSecondsNow()))));
+                        pushNotificationController.send(new SendRequest(guid, new NotificationData("kron", "cron", "Kron przeszedł", TimeZoneUtils.epochSecondsNowStr()))));
     }
 }

@@ -14,6 +14,7 @@ import pl.kmalysiak.notificator.service.HaEventService;
 import pl.kmalysiak.notificator.service.NotificationLogService;
 import pl.kmalysiak.notificator.service.NotificationManager;
 import pl.kmalysiak.notificator.service.NotificationMapper;
+import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
 import java.nio.charset.StandardCharsets;
 
@@ -32,12 +33,13 @@ public class HaQueueConsumer {
     )
     public void consume(Message message) {
         try {
+            long msgArrived = TimeZoneUtils.epochSecondsNow();
             HaEntityDto dto = rks.updateHaEntityStateOnHaEvent(EventNotification.fromMessage(message));
             if (BooleanUtils.isNotTrue(dto.getNotifyMobile())) {
                 log.debug("nie wysłano powiadomienia mobile dla encji:{}, rec:{}, timestamp:{} z uwagi na notifyMobile:{}", dto.getEntityId(), dto.getCurrTimestamp(), dto.getCurrReceived(), dto.getNotifyMobile());
                 return;
             }
-
+            log.info("dec 1:{}", TimeZoneUtils.epochSecondsNow() - msgArrived );
             if (!dto.shouldSendMobileNotification()) {
                 log.debug("nie wysłano powiadomienia mobile dla encji:{}, curr:{}, prev:{}, z uwagi na notifyFreq:{}", dto.getEntityId(), dto.getCurrTimestamp(), dto.getPrevTimestamp(), dto.getNotifyFreq());
                 return;
@@ -48,17 +50,18 @@ public class HaQueueConsumer {
                 log.debug("nie wysłano powiadomienia mobile dla encji:{}, rec:{}, timestamp:{}, z uwagi na stan:{}", dto.getEntityId(), dto.getCurrTimestamp(), dto.getCurrReceived(), dto.getCurrState());
                 return;
             }
-
+            log.info("dec 2:{}", TimeZoneUtils.epochSecondsNow() - msgArrived );
             if ("none".equals(dto.getRecipientEmails()) || dto.getRecipientEmailsAsSet().isEmpty()) {
                 log.debug("nie wysłano powiadomienia mobile dla encji:{} z uwagi na odbiorcy:{}", dto.getEntityId(), dto.getRecipientEmails());
                 return;
             }
-
-            log.info("wysyłka powiadomienia do:{}", dto.getRecipientEmails());
             if ("all".equalsIgnoreCase(dto.getRecipientEmails())) {
                 logService.addToLog(nd, "all");
+                log.info("added to log");
                 notificationManager.sendMsgToAllUsersViaWs(nd);
+                log.info("msg send");
                 rks.updateLastNotified(dto.getEntityId());
+                log.info("wysyłka powiadomienia do:{}, przetwarzanie serwer[s]:{}, przetwarzanie total[s]:{}", dto.getRecipientEmails(), msgArrived - TimeZoneUtils.epochSecondsNow(), TimeZoneUtils.epochSecondsNow() - Long.parseLong(nd.timestamp()));
             } else {
                 logService.addToLog(nd, dto.getRecipientEmails());
                 notificationManager.sendMsgToUsers(dto.getRecipientEmailsAsSet(), nd);

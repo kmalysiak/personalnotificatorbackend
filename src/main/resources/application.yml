@@ -48,7 +48,7 @@ logging:
     com.rabbitmq: INFO
     org.springframework.retry: INFO
     org.springframework.boot.autoconfigure.amqp: INFO
-    pl.kmalysiak.notificator.rabbit: INFO
+    pl.kmalysiak.notificator.rabbit: debug
     pl.kmalysiak: DEBUG
 
 

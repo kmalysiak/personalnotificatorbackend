@@ -79,7 +79,7 @@ public class WsWakeUpService {
     private WakeUpResult trySendWakeUp(UserToken userToken) {
         try {
             notificationManager.sendWakeUpMsgToFirebaseToken(userToken.getFcmToken(), new NotificationData(
-                    "połącz się", "reconnect_request", "próba " + userToken.getNotifyAttempts(), TimeZoneUtils.epochSecondsNow())
+                    "połącz się", "reconnect_request", "próba " + userToken.getNotifyAttempts(), TimeZoneUtils.epochSecondsNowStr())
             );
             return WakeUpResult.SENT;
         } catch (FcmException e) {

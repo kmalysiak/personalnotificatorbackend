@@ -13,8 +13,12 @@ public class TimeZoneUtils {
         return LocalDateTime.now(TIME_Z_WARSAW);
     }
 
-    public static String epochSecondsNow() {
+    public static String epochSecondsNowStr() {
         return String.valueOf(Instant.now().getEpochSecond());
+    }
+
+    public static long epochSecondsNow() {
+        return Instant.now().getEpochSecond();
     }
 
     public static LocalDateTime epochSecondsToLocalDateTime(String epochSeconds) {

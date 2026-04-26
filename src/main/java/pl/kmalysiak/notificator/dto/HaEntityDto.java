@@ -60,6 +60,7 @@ public class HaEntityDto {
             Instant laterInstant = currTimestamp.atZone(TimeZoneUtils.TIME_Z_WARSAW).toInstant();
 
 
+
             if (notifyFreq.startsWith("PT")) {
                 Duration limit = Duration.parse(notifyFreq);
                 return Duration.between(earlierInstant, laterInstant).compareTo(limit) > 0;

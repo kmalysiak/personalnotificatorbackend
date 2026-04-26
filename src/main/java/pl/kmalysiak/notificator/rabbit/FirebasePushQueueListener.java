@@ -20,7 +20,7 @@ public class FirebasePushQueueListener {
     @RabbitListener(queues = Names.FIREBASE_PUSH_QUEUE_SINGLE)
     public void handleMessage(SingleUidNotification notification) {
         log.info("Pushing notification to uid:{}, msg:{}", notification.getUid(), notification.getMsg());
-        SendRequest sr = new SendRequest(notification.getUid(), new NotificationData("zalogowano", "push", notification.getMsg(), TimeZoneUtils.epochSecondsNow()));
+        SendRequest sr = new SendRequest(notification.getUid(), new NotificationData("zalogowano", "push", notification.getMsg(), TimeZoneUtils.epochSecondsNowStr()));
         pushNotificationController.send(sr);
     }
 }
