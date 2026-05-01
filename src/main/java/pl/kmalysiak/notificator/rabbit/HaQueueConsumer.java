@@ -63,8 +63,9 @@ public class HaQueueConsumer {
                 rks.updateLastNotified(dto.getEntityId());
                 log.info("wysyłka powiadomienia do:{}, przetwarzanie serwer[s]:{}, przetwarzanie total[s]:{}", dto.getRecipientEmails(), msgArrived - TimeZoneUtils.epochSecondsNow(), TimeZoneUtils.epochSecondsNow() - Long.parseLong(nd.timestamp()));
             } else {
-                logService.addToLog(nd, dto.getRecipientEmails());
-                notificationManager.sendMsgToUsers(dto.getRecipientEmailsAsSet(), nd);
+                  log.warn("Sendmsg to selected users not impl. FIX ME");
+//                logService.addToLog(nd, dto.getRecipientEmails());
+//                notificationManager.sendMsgToUsers(dto.getRecipientEmailsAsSet(), nd);
                 rks.updateLastNotified(dto.getEntityId());
             }
 

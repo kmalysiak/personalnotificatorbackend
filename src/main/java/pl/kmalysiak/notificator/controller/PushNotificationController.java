@@ -20,7 +20,7 @@ public class PushNotificationController {
 
     @PostMapping("/send")
     public void send(@RequestBody SendRequest request) {
-        notificationManager.sendMsgToUser(request.uid(), request.nd());
+        //notificationManager.sendMsgToUser(request.uid(), request.nd());
     }
 
 

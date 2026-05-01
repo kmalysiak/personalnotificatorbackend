@@ -1,0 +1,12 @@
+services:
+  notificator:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./logs:/app/logs
+      - ./src/main/resources/logback-spring.xml:/app/config/logback.xml
+    environment:
+      - LOGGING_CONFIG=file:/app/config/logback.xml
+    env_file:
+      - .env

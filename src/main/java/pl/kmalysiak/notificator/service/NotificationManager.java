@@ -20,17 +20,17 @@ public class NotificationManager {
     private final NotificationService notificationService;
     private final UserTokenService userTokenService;
     private final SessionRegistry sessionRegistry;
-    public void sendMsgToAllUsersViaFCM(NotificationData nd) {
-
-        sessionRegistry.getAll();
-
-        List<String> tokens = userTokenService.getAllFcmTokens();
-        if (CollectionUtils.isEmpty(tokens))
-            log.warn("No tokens");
-        for (String token : tokens) {
-            notificationService.sendMessage(token, nd, null, -1);
-        }
-    }
+//    public void sendMsgToAllUsersViaFCM(NotificationData nd) {
+//
+//        sessionRegistry.getAll();
+//
+//        List<String> tokens = userTokenService.getAllFcmTokens();
+//        if (CollectionUtils.isEmpty(tokens))
+//            log.warn("No tokens");
+//        for (String token : tokens) {
+//            notificationService.sendMessage(token, nd, null, -1);
+//        }
+//    }
 
     public void sendMsgToAllUsersViaWs(NotificationData nd) {
         List<WebSocketSession> sessions = sessionRegistry.getAll();
@@ -41,22 +41,22 @@ public class NotificationManager {
         }
     }
 
-    public void sendMsgToUser(String userUid, NotificationData nd) {
-        List<String> tokens = userTokenService.getFcmTokensForGuid(userUid);
-        if (CollectionUtils.isEmpty(tokens)) log.error("No tokens for UID: " + userUid);
+//    public void sendMsgToUser(String userUid, NotificationData nd) {
+//        List<String> tokens = userTokenService.getFcmTokensForGuid(userUid);
+//        if (CollectionUtils.isEmpty(tokens)) log.error("No tokens for UID: " + userUid);
+//
+//        tokens.forEach(token -> notificationService.sendMessage(token, nd,null, -1));
+//    }
 
-        tokens.forEach(token -> notificationService.sendMessage(token, nd,null, -1));
-    }
-
-
-    public void sendMsgToUsers(Set<String> emails, NotificationData nd) {
-        for (String email : emails) {
-            List<String> tokens = userTokenService.getFcmTokensForEmail(email);
-            if (CollectionUtils.isEmpty(tokens))
-                log.error("No tokens for email: " + email);
-            tokens.forEach(token -> notificationService.sendMessage(token, nd,null, -1));
-        }
-    }
+//
+//    public void sendMsgToUsers(Set<String> emails, NotificationData nd) {
+//        for (String email : emails) {
+//            List<String> tokens = userTokenService.getFcmTokensForEmail(email);
+//            if (CollectionUtils.isEmpty(tokens))
+//                log.error("No tokens for email: " + email);
+//            tokens.forEach(token -> notificationService.sendMessage(token, nd,null, -1));
+//        }
+//    }
 
 
     public void sendWakeUpMsgToFirebaseToken(String fcmToken, NotificationData nd) {

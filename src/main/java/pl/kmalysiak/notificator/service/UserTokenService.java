@@ -85,6 +85,6 @@ public class UserTokenService {
     }
 
     public UserToken getTokenById(UserTokenId userTokenId) {
-        return repo.findById(userTokenId).orElseThrow(null);
+        return repo.findById(userTokenId).orElse(null);
     }
 }
