@@ -37,6 +37,9 @@ admin:
 ws:
   broadcast:
     interval: ${WS_BS_INT}
+  haier:
+    broadcast:
+      interval: ${WS_HAIER_BS_INT:5000}
 
 
 

@@ -224,4 +224,6 @@ Each Home Assistant entity can define `notifyFreq` to throttle duplicate notific
 
 ## License
 
-Private project — all rights reserved.
+This project is licensed under the **GNU General Public License v3.0** — see the [LICENSE](LICENSE) file for details.
+
+For commercial licensing inquiries, contact [kmalysiak.pl@gmail.com](mailto:kmalysiak.pl@gmail.com).
