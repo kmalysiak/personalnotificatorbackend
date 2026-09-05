@@ -14,3 +14,5 @@ target/
 /src/main/resources/service-account.json
 
 *.env
+
+CLAUDE.md
