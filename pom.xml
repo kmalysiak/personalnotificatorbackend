@@ -216,6 +216,12 @@
                             <goal>repackage</goal>
                         </goals>
                     </execution>
+                    <execution>
+                        <id>generate-build-info</id>
+                        <goals>
+                            <goal>build-info</goal>
+                        </goals>
+                    </execution>
                 </executions>
 
 

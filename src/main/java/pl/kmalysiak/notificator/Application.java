@@ -20,6 +20,7 @@ public class Application {
         SpringApplication app = new SpringApplication(Application.class);
         app.setBanner((environment, sourceClass, out) -> {
             Properties gitProps = new Properties();
+            Properties buildProps = new Properties();
 
             try (InputStream is = Application.class.getClassLoader().getResourceAsStream("git.properties")) {
                 if (is != null) {
@@ -28,10 +29,21 @@ public class Application {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            // git.properties nie jest nadpisywany, gdy commit/dirty-status się nie zmienił od
+            // poprzedniego builda (optymalizacja git-commit-id-plugin) -> git.build.time bywa
+            // nieaktualne. Rzeczywista data builda idzie z build-info.properties (spring-boot
+            // build-info goal), które generuje się od nowa przy każdym buildzie.
+            try (InputStream is = Application.class.getClassLoader().getResourceAsStream("META-INF/build-info.properties")) {
+                if (is != null) {
+                    buildProps.load(is);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
 
             String commitId = gitProps.getProperty("git.commit.id.abbrev", "unknown");
             String commitTime = gitProps.getProperty("git.commit.time", "unknown");
-            String buildTime = gitProps.getProperty("git.build.time", "unknown");
+            String buildTime = buildProps.getProperty("build.time", "unknown");
             out.println(" ************************NOTIFICATOR***************************");
             out.println(" Commit: " + commitId);
             out.println(" Commit time: " + commitTime);

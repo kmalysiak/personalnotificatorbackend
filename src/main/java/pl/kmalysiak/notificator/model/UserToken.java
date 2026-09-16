@@ -24,6 +24,7 @@ public class UserToken {
     private String email;
     private LocalDateTime created;
     private LocalDateTime connectionLostAt;  // null = aktualnie połączony
+    private LocalDateTime lastSeenAt;        // watermark z pong-a klienta, do retransmisji po reconnekcie
     private Integer notifyAttempts;          // ile razy próbowaliśmy
     private LocalDateTime nextRetryAt;   // kiedy następna próba (null = jeszcze nie próbowano)
     private LocalDateTime firstFailedAt; // kiedy zaczęliśmy się dobijać (do logiki usuwania)

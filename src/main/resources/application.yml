@@ -40,6 +40,8 @@ ws:
   haier:
     broadcast:
       interval: ${WS_HAIER_BS_INT:5000}
+  replay:
+    window-minutes: ${WS_REPLAY_WINDOW_MIN:20}
 
 
 

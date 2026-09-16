@@ -15,6 +15,7 @@ import pl.kmalysiak.notificator.model.entity.NotificationLogEntity;
 import pl.kmalysiak.notificator.repo.NotificationLogRepo;
 import pl.kmalysiak.notificator.utils.CustomObjectMapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,14 @@ public class NotificationLogService {
         repo.trimTo500();
     }
 
+
+    // Retransmisja po reconnekcie WS: klient sam deduplikuje po hashu treści+timestamp,
+    // więc świadomie wysyłamy "z zapasem" zamiast precyzyjnie liczyć co realnie przegapił.
+    public List<NotificationData> getRecentSince(LocalDateTime since) {
+        return repo.findByTimestampAfterOrderByTimestampAsc(since).stream()
+                .map(e -> new NotificationData(e.getEntityFriendlyName(), e.getType(), e.getMsg(), e.getRawTimestamp()))
+                .collect(Collectors.toList());
+    }
 
     @Scheduled(fixedRate = 30 * 60 * 1000)
     @CacheEvict(value = "log", allEntries = true)

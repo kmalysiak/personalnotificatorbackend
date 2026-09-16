@@ -59,6 +59,17 @@ public class UserTokenService {
     }
 
 
+    @Transactional
+    public void onPong(UserTokenId utId, String lastSeenEpochSeconds) {
+        UserToken userToken = repo.findById(utId).orElse(null);
+        if (userToken == null) {
+            log.warn("Pong dla nieznanego userToken:{}", utId.getDesc());
+            return;
+        }
+        userToken.setLastSeenAt(TimeZoneUtils.epochSecondsToLocalDateTime(lastSeenEpochSeconds));
+        repo.save(userToken);
+    }
+
     public List<String> getFcmTokensForGuid(String uid) {
         return repo.findByUserFirebaseGuid(uid).stream().map(UserToken::getFcmToken).collect(Collectors.toList());
     }
