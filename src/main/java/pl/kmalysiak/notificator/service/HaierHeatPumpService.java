@@ -12,6 +12,7 @@ import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -51,6 +52,15 @@ public class HaierHeatPumpService {
     private static final String ENTITY_COP_ESTIMATED = "sensor.garaz_haier_sniffer_cop_estimated";
     private static final String ENTITY_SUCTION_GAS_TEMPERATURE_TS = "sensor.garaz_haier_sniffer_suction_gas_temperature_ts";
     private static final String ENTITY_UNKNOWN_QUERY_COUNT = "sensor.garaz_haier_sniffer_unknown_query_count";
+    private static final String ENTITY_HEAT_PUMP_MODE_DECODED = "sensor.garaz_haier_sniffer_heat_pump_mode_decoded";
+    private static final String ENTITY_OPERATIONAL_STATUS_DECODED = "sensor.garaz_haier_sniffer_operational_status_decoded";
+    private static final String ENTITY_DEFROST_R156_BIT_4 = "binary_sensor.garaz_haier_sniffer_defrost_r156_bit_4";
+    private static final String ENTITY_CH_WATER_FLOW_ASSUMED = "number.garaz_haier_sniffer_ch_water_flow_assumed";
+    private static final String ENTITY_WIFI_SIGNAL = "sensor.garaz_haier_sniffer_wifi_signal";
+    private static final String ENTITY_UPTIME = "sensor.garaz_haier_sniffer_uptime";
+
+    /** stany HA oznaczające brak wartości - dla pól tekstowych mapowane na null */
+    private static final Set<String> UNAVAILABLE_STATES = Set.of("unavailable", "unknown");
 
     private static final List<String> MONITORED_ENTITY_IDS = List.of(
             ENTITY_OPERATIONAL_STATUS,
@@ -78,7 +88,13 @@ public class HaierHeatPumpService {
             ENTITY_AMBIENT_TEMPERATURE_TAO,
             ENTITY_COP_ESTIMATED,
             ENTITY_SUCTION_GAS_TEMPERATURE_TS,
-            ENTITY_UNKNOWN_QUERY_COUNT
+            ENTITY_UNKNOWN_QUERY_COUNT,
+            ENTITY_HEAT_PUMP_MODE_DECODED,
+            ENTITY_OPERATIONAL_STATUS_DECODED,
+            ENTITY_DEFROST_R156_BIT_4,
+            ENTITY_CH_WATER_FLOW_ASSUMED,
+            ENTITY_WIFI_SIGNAL,
+            ENTITY_UPTIME
     );
 
     private final HaEntityRepo repo;
@@ -97,12 +113,16 @@ public class HaierHeatPumpService {
         dto.setCurrentErrorCode(toDictValue(byEntityId.get(ENTITY_CURRENT_ERROR_CODE)));
         dto.setR141LsbErrorCodeAlt(toDictValue(byEntityId.get(ENTITY_ERROR_CODE_ALT)));
 
+        dto.setHeatPumpModeDecoded(toText(byEntityId.get(ENTITY_HEAT_PUMP_MODE_DECODED)));
+        dto.setOperationalStatusDecoded(toText(byEntityId.get(ENTITY_OPERATIONAL_STATUS_DECODED)));
+
         dto.setDefrostActive(toBoolean(byEntityId.get(ENTITY_DEFROST_ACTIVE)));
         dto.setAntifreezeProtectionActive(toBoolean(byEntityId.get(ENTITY_ANTIFREEZE_PROTECTION_ACTIVE)));
         dto.setThreeWayValveToCh(toBoolean(byEntityId.get(ENTITY_THREE_WAY_VALVE_TO_CH)));
         dto.setThreeWayValveToDhw(toBoolean(byEntityId.get(ENTITY_THREE_WAY_VALVE_TO_DHW)));
         dto.setCirculationPump(toBoolean(byEntityId.get(ENTITY_CIRCULATION_PUMP)));
         dto.setBackupResistiveHeater(toBoolean(byEntityId.get(ENTITY_BACKUP_RESISTIVE_HEATER)));
+        dto.setDefrostR156Bit4(toBoolean(byEntityId.get(ENTITY_DEFROST_R156_BIT_4)));
 
         dto.setDhwBufferTemperature(toBigDecimal(byEntityId.get(ENTITY_DHW_BUFFER_TEMPERATURE)));
         dto.setCompressorFrequencyActual(toBigDecimal(byEntityId.get(ENTITY_COMPRESSOR_FREQUENCY_ACTUAL)));
@@ -119,10 +139,19 @@ public class HaierHeatPumpService {
         dto.setCopEstimated(toBigDecimal(byEntityId.get(ENTITY_COP_ESTIMATED)));
         dto.setSuctionGasTemperatureTs(toBigDecimal(byEntityId.get(ENTITY_SUCTION_GAS_TEMPERATURE_TS)));
         dto.setUnknownQueryCount(toBigDecimal(byEntityId.get(ENTITY_UNKNOWN_QUERY_COUNT)));
+        dto.setChWaterFlowAssumed(toBigDecimal(byEntityId.get(ENTITY_CH_WATER_FLOW_ASSUMED)));
+        dto.setWifiSignal(toBigDecimal(byEntityId.get(ENTITY_WIFI_SIGNAL)));
+        dto.setUptime(toBigDecimal(byEntityId.get(ENTITY_UPTIME)));
 
         dictionaryService.resolveDictionaryFields(dto);
 
         return dto;
+    }
+
+    private static String toText(HaEntity entity) {
+        if (entity == null || entity.getCurrState() == null || entity.getCurrState().isBlank()) return null;
+        String value = entity.getCurrState().trim();
+        return UNAVAILABLE_STATES.contains(value.toLowerCase()) ? null : value;
     }
 
     private static Boolean toBoolean(HaEntity entity) {

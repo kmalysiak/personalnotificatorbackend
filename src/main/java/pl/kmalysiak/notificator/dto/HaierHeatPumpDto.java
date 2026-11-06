@@ -57,6 +57,22 @@ public class HaierHeatPumpDto {
     @Dictionary(5)
     private DictValue r141LsbErrorCodeAlt;
 
+    // ---- statusy zdekodowane na tekst po stronie ESP (sniffer) ----
+
+    /**
+     * sensor.garaz_haier_sniffer_heat_pump_mode_decoded - tekst z rejestru R141 dekodowany przez ESP,
+     * np. "c.o.", "CWU", "odszranianie (CWU)", z dopiskiem "+ antyzamarzanie", albo "nieznany (N)".
+     * Niezależne od słownika nr 2 ({@link #heatPumpMode}) - do porównania.
+     */
+    private String heatPumpModeDecoded;
+
+    /**
+     * sensor.garaz_haier_sniffer_operational_status_decoded - tekst z rejestru R144 dekodowany przez ESP,
+     * np. "postój", "rozruch", "wygaszanie", "praca", z dopiskiem "+ grzałka", albo "nieznany (N)".
+     * Niezależne od słownika nr 1 ({@link #operationalStatus}) - do porównania.
+     */
+    private String operationalStatusDecoded;
+
     // ---- binary on/off states (curr_state "on"/"off" parsed to boolean) ----
 
     /** binary_sensor.garaz_haier_sniffer_defrost_active */
@@ -76,6 +92,12 @@ public class HaierHeatPumpDto {
 
     /** binary_sensor.garaz_haier_sniffer_backup_resistive_heater */
     private Boolean backupResistiveHeater;
+
+    /**
+     * binary_sensor.garaz_haier_sniffer_defrost_r156_bit_4 - druga, niezależna flaga odszraniania
+     * (bit 4 rejestru R156), do porównania z {@link #defrostActive} (bit 5 rejestru R141).
+     */
+    private Boolean defrostR156Bit4;
 
     // ---- numeric measurements ----
 
@@ -127,4 +149,21 @@ public class HaierHeatPumpDto {
 
     /** sensor.garaz_haier_sniffer_unknown_query_count - licznik debugowy protokołu sniffera */
     private BigDecimal unknownQueryCount;
+
+    /**
+     * number.garaz_haier_sniffer_ch_water_flow_assumed [L/min] - założony przepływ w obiegu c.o.
+     * (konfiguracja w HA, zakres 5-30, krok 0,5, domyślnie 13); wchodzi do wzoru na {@link #copEstimated}.
+     */
+    private BigDecimal chWaterFlowAssumed;
+
+    // ---- diagnostyka ESP (sniffera) ----
+
+    /** sensor.garaz_haier_sniffer_wifi_signal [dBm] - siła sygnału Wi-Fi ESP, odświeżane co 60 s */
+    private BigDecimal wifiSignal;
+
+    /**
+     * sensor.garaz_haier_sniffer_uptime [s] - czas od ostatniego startu ESP, odświeżane co 60 s.
+     * Nagły spadek = restart ESP (przy samej utracie Wi-Fi rośnie dalej).
+     */
+    private BigDecimal uptime;
 }
