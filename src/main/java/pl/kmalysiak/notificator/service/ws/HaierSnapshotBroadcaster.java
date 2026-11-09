@@ -53,6 +53,6 @@ public class HaierSnapshotBroadcaster {
             }
         }
 
-        log.debug("Wysłano snapshot Haier do {}/{} klientów", sent, sessions.size());
+        log.trace("Wysłano snapshot Haier do {}/{} klientów", sent, sessions.size());
     }
 }

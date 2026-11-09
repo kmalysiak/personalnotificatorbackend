@@ -22,7 +22,7 @@ public interface UserTokenRepository extends JpaRepository<UserToken, UserTokenI
     @Query("""
             SELECT u FROM UserToken u
             WHERE u.connectionLostAt IS NOT NULL
-              AND u.connectionLostAt > :giveUpAt
+              AND (u.firstFailedAt IS NULL OR u.firstFailedAt > :giveUpAt)
               AND (u.nextRetryAt IS NULL OR u.nextRetryAt <= :now)
             """)
     List<UserToken> findDisconnectedForWakeUp(@Param("giveUpAt") LocalDateTime giveUpAt, @Param("now") LocalDateTime now);

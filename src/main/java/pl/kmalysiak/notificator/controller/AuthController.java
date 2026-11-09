@@ -40,7 +40,7 @@ public class AuthController {
 
 
         if (uidRes.isOk()) {
-            userTokenService.onUserFcmTokenAuthorised(new UserTokenId(uidRes.guid(), request.fcmToken()), uidRes.email());
+            userTokenService.onUserFcmTokenAuthorised(new UserTokenId(uidRes.guid(), request.fcmToken()), uidRes.email(), UserTokenService.AuthSource.REST_REGISTER);
             rabbitPublisher.pushUserUpdateNotification(new SingleUidNotification(uidRes.guid(), uidRes.email()));
             return new RegisterResult(true, "");
         } else {

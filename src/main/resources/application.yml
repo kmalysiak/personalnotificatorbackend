@@ -42,6 +42,12 @@ ws:
       interval: ${WS_HAIER_BS_INT:5000}
   replay:
     window-minutes: ${WS_REPLAY_WINDOW_MIN:20}
+    margin-seconds: ${WS_REPLAY_MARGIN_SEC:120}
+  # sesja bez wiadomości od klienta (pong) dłużej niż tyle = martwa -> zamknięcie + ew. wybudzenie FCM; <=0 wyłącza
+  dead-after-seconds: ${WS_DEAD_AFTER_SEC:35}
+  monitor:
+    # co ile minut log "[WSMON] STATUS" (stan sesji i urządzeń offline); <=0 wyłącza
+    summary-minutes: ${WS_MON_SUMMARY_MIN:5}
 
 
 

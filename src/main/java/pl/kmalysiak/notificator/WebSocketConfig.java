@@ -72,7 +72,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
 
                         WsSessionUtil.putWsAttributes(attributes, fcmToken, result);
-                        userTokenService.onUserFcmTokenAuthorised(new UserTokenId(result.guid(), fcmToken), result.email());
+                        userTokenService.onUserFcmTokenAuthorised(new UserTokenId(result.guid(), fcmToken), result.email(), UserTokenService.AuthSource.WS_HANDSHAKE);
                         log.info("Zautoryzowano uid={} fcmToken={} email:{}", result.guid(), fcmToken, result.email());
 
                         return true;

@@ -61,6 +61,13 @@ public class NotificationLogService {
                 .collect(Collectors.toList());
     }
 
+    // Czy urządzenie ma coś do odebrania: wpisy nowsze niż jego watermark (minus margines, jak przy
+    // retransmisji). Brak watermarku = nie wiadomo, traktujemy jak zaległe.
+    public boolean hasPendingSince(LocalDateTime lastSeenAt, long marginSeconds) {
+        if (lastSeenAt == null) return true;
+        return repo.existsByTimestampAfter(lastSeenAt.minusSeconds(marginSeconds));
+    }
+
     @Scheduled(fixedRate = 30 * 60 * 1000)
     @CacheEvict(value = "log", allEntries = true)
     public void evictCache() {

@@ -14,6 +14,7 @@ import pl.kmalysiak.notificator.service.HaEventService;
 import pl.kmalysiak.notificator.service.NotificationLogService;
 import pl.kmalysiak.notificator.service.NotificationManager;
 import pl.kmalysiak.notificator.service.NotificationMapper;
+import pl.kmalysiak.notificator.service.ws.WsWakeUpService;
 import pl.kmalysiak.notificator.utils.TimeZoneUtils;
 
 import java.nio.charset.StandardCharsets;
@@ -26,6 +27,7 @@ public class HaQueueConsumer {
     private final NotificationManager notificationManager;
     private final NotificationMapper notificationCalculator;
     private final NotificationLogService logService;
+    private final WsWakeUpService wsWakeUpService;
 
     @RabbitListener(
             queues = "${queue.ha}",
@@ -60,6 +62,12 @@ public class HaQueueConsumer {
                 log.info("added to log");
                 notificationManager.sendMsgToAllUsersViaWs(nd);
                 log.info("msg send");
+                try {
+                    // urządzenia bez żywej sesji WS (śpiące w Doze) — wybudzenie FCM, treść dojdzie retransmisją po reconnekcie
+                    wsWakeUpService.onNewNotification();
+                } catch (Exception e) {
+                    log.error("Błąd wybudzania FCM po nowym powiadomieniu", e);
+                }
                 rks.updateLastNotified(dto.getEntityId());
                 log.info("wysyłka powiadomienia do:{}, przetwarzanie serwer[s]:{}, przetwarzanie total[s]:{}", dto.getRecipientEmails(), msgArrived - TimeZoneUtils.epochSecondsNow(), TimeZoneUtils.epochSecondsNow() - Long.parseLong(nd.timestamp()));
             } else {

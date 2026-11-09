@@ -23,6 +23,8 @@
     <logger name="org.springframework.boot.autoconfigure.amqp" level="INFO"/>
     <logger name="pl.kmalysiak.notificator.rabbit" level="DEBUG"/>
     <logger name="pl.kmalysiak" level="DEBUG"/>
+    <!-- monitoring dostarczania WS/FCM: zdarzenia "[WSMON] ..." (grep WSMON); DEBUG pokazuje też ignorowane zamknięcia starych sesji -->
+    <logger name="pl.kmalysiak.notificator.wsmon" level="INFO"/>
 
     <root level="INFO">
         <appender-ref ref="CONSOLE"/>

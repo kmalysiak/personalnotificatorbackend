@@ -12,6 +12,8 @@ public interface NotificationLogRepo extends JpaRepository<NotificationLogEntity
 
     List<NotificationLogEntity> findByTimestampAfterOrderByTimestampAsc(LocalDateTime since);
 
+    boolean existsByTimestampAfter(LocalDateTime since);
+
     @Modifying
     @Query(value = """
             DELETE FROM ha_notification_log_entity

@@ -7,6 +7,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.socket.WebSocketSession;
 import pl.kmalysiak.notificator.model.NotificationData;
 import pl.kmalysiak.notificator.service.ws.SessionRegistry;
+import pl.kmalysiak.notificator.service.ws.WsMon;
 
 import java.time.Duration;
 import java.util.List;
@@ -34,11 +35,11 @@ public class NotificationManager {
 
     public void sendMsgToAllUsersViaWs(NotificationData nd) {
         List<WebSocketSession> sessions = sessionRegistry.getAll();
-        if (CollectionUtils.isEmpty(sessions))
-            log.warn("No sessions");
         for (WebSocketSession session : sessions) {
             notificationService.sendMessageWsChannel(session, nd);
         }
+        // 0 sesji = wszystkie urządzenia offline -> treść dojdzie retransmisją po wybudzeniu (WSMON WAKE)
+        WsMon.LOG.info("[WSMON] NOTIFY \"{}: {}\" ts={} -> {} sesji WS", nd.entityFriendlyName(), nd.msg(), nd.timestamp(), sessions.size());
     }
 
 //    public void sendMsgToUser(String userUid, NotificationData nd) {
