@@ -63,7 +63,12 @@ public class HaEntityDto {
 
             if (notifyFreq.startsWith("PT")) {
                 Duration limit = Duration.parse(notifyFreq);
-                return Duration.between(earlierInstant, laterInstant).compareTo(limit) > 0;
+                Duration elapsed = Duration.between(earlierInstant, laterInstant);
+                // PT0S = każda zmiana, także dwa zdarzenia z tym samym znacznikiem czasu
+                // (np. przeładowanie encji w HA: unavailable i nowy stan w tej samej chwili)
+                if (limit.isZero())
+                    return !elapsed.isNegative();
+                return elapsed.compareTo(limit) > 0;
             }
 
             Period period = Period.parse(notifyFreq);
