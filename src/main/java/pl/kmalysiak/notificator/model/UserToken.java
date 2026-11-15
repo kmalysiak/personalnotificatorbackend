@@ -28,6 +28,7 @@ public class UserToken {
     private Integer notifyAttempts;          // ile razy próbowaliśmy
     private LocalDateTime nextRetryAt;   // kiedy następna próba (null = jeszcze nie próbowano)
     private LocalDateTime firstFailedAt; // kiedy zaczęliśmy się dobijać (do logiki usuwania)
+    private Integer failedCampaigns;     // ile kampanii wybudzania z rzędu skończyło się GIVE-UP bez reconnectu (null = 0)
     public UserToken(String userFirebaseGuid, String fcmToken, String email, LocalDateTime created) {
         this.userFirebaseGuid = userFirebaseGuid;
         this.fcmToken = fcmToken;

@@ -116,9 +116,11 @@ public class UserTokenService {
         }
         LocalDateTime now = TimeZoneUtils.getLocalDateTimeNow();
         int attempts = ut.getNotifyAttempts() == null ? 0 : ut.getNotifyAttempts();
-        WsMon.LOG.info("[WSMON] HANDSHAKE {} po przerwie {} (lostAt={}), wakeAttempts={}, pierwszy wake {} temu, lastSeen={}",
+        int failedCampaigns = ut.getFailedCampaigns() == null ? 0 : ut.getFailedCampaigns();
+        WsMon.LOG.info("[WSMON] HANDSHAKE {} po przerwie {} (lostAt={}), wakeAttempts={}, pierwszy wake {} temu, lastSeen={}{}",
                 WsMon.dev(ut), WsMon.ago(ut.getConnectionLostAt(), now), ut.getConnectionLostAt(), attempts,
-                WsMon.ago(ut.getFirstFailedAt(), now), ut.getLastSeenAt());
+                WsMon.ago(ut.getFirstFailedAt(), now), ut.getLastSeenAt(),
+                failedCampaigns > 0 ? ", wcześniej nieudanych kampanii: " + failedCampaigns : "");
     }
 
     private void resetBackoff(UserToken userToken) {
@@ -126,6 +128,7 @@ public class UserTokenService {
         userToken.setNextRetryAt(null);
         userToken.setFirstFailedAt(null);
         userToken.setConnectionLostAt(null);
+        userToken.setFailedCampaigns(0); // urządzenie wróciło — koniec trybu rzadkiego budzenia
     }
 
     public List<UserToken> getAll() {

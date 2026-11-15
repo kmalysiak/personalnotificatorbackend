@@ -101,8 +101,9 @@ public class PingScheduler {
         LocalDateTime nowLocal = TimeZoneUtils.getLocalDateTimeNow();
         String offline = userTokenService.getAll().stream()
                 .filter(ut -> !sessionRegistry.hasLiveSession(ut.getUserTokenId()))
-                .map(ut -> String.format("%s offline %s, wakeAttempts=%s, lastSeen=%s", WsMon.dev(ut),
-                        WsMon.ago(ut.getConnectionLostAt(), nowLocal), ut.getNotifyAttempts(), ut.getLastSeenAt()))
+                .map(ut -> String.format("%s offline %s, wakeAttempts=%s, lastSeen=%s%s", WsMon.dev(ut),
+                        WsMon.ago(ut.getConnectionLostAt(), nowLocal), ut.getNotifyAttempts(), ut.getLastSeenAt(),
+                        WsWakeUpService.isDormant(ut) ? ", TRYB RZADKI (nieudanych kampanii: " + ut.getFailedCampaigns() + ")" : ""))
                 .collect(Collectors.joining("; "));
 
         WsMon.LOG.info("[WSMON] STATUS sesje={} [{}] | offline: [{}]", stats.size(), live, offline);

@@ -185,6 +185,8 @@ public class HaierHeatPumpService {
 
     private static BigDecimal toBigDecimal(HaEntity entity) {
         if (entity == null || entity.getCurrState() == null || entity.getCurrState().isBlank()) return null;
+        // unknown/unavailable to normalne stany HA (np. COP przy postoju, restart ESP) — brak wartości, nie błąd
+        if (UNAVAILABLE_STATES.contains(entity.getCurrState().trim().toLowerCase())) return null;
         try {
             return new BigDecimal(entity.getCurrState().trim());
         } catch (NumberFormatException e) {

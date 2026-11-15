@@ -34,8 +34,11 @@ class UserTokenServiceTest {
     @Test
     void restRegisterKeepsConnectionLostStateSoWakeUpContinues() {
         UserToken ut = offlineToken();
+        ut.setFailedCampaigns(3);
 
         service.onUserFcmTokenAuthorised(id, "new@b.pl", UserTokenService.AuthSource.REST_REGISTER);
+
+        assertEquals(3, ut.getFailedCampaigns(), "REST register nie kończy trybu rzadkiego");
 
         assertEquals("new@b.pl", ut.getEmail());
         assertNotNull(ut.getConnectionLostAt(), "REST register nie może udawać, że urządzenie jest połączone");
@@ -47,9 +50,11 @@ class UserTokenServiceTest {
     @Test
     void wsHandshakeResetsConnectionStateAndWakeCampaign() {
         UserToken ut = offlineToken();
+        ut.setFailedCampaigns(3);
 
         service.onUserFcmTokenAuthorised(id, "a@b.pl", UserTokenService.AuthSource.WS_HANDSHAKE);
 
+        assertEquals(0, ut.getFailedCampaigns(), "reconnect kończy tryb rzadki");
         assertNull(ut.getConnectionLostAt());
         assertEquals(0, ut.getNotifyAttempts());
         assertNull(ut.getFirstFailedAt());
