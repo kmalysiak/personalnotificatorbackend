@@ -166,4 +166,15 @@ public class HaierHeatPumpDto {
      * Nagły spadek = restart ESP (przy samej utracie Wi-Fi rośnie dalej).
      */
     private BigDecimal uptime;
+
+    // ---- dom - termostat Salus (nie z pompy, ale steruje jej pracą na c.o.) ----
+
+    /** sensor.salus_termostat_rf_temperatura_pokoju [°C] - temperatura w domu z termostatu Salus */
+    private BigDecimal salusRoomTemperature;
+
+    /** sensor.salus_termostat_rf_temperatura_zadana [°C] - temperatura zadana na termostacie Salus */
+    private BigDecimal salusSetpointTemperature;
+
+    /** binary_sensor.salus_termostat_rf_zadanie_grzania - żądanie grzania z termostatu Salus */
+    private Boolean salusHeatDemand;
 }

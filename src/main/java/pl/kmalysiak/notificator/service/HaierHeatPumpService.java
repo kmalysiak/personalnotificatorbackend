@@ -58,6 +58,10 @@ public class HaierHeatPumpService {
     private static final String ENTITY_CH_WATER_FLOW_ASSUMED = "number.garaz_haier_sniffer_ch_water_flow_assumed";
     private static final String ENTITY_WIFI_SIGNAL = "sensor.garaz_haier_sniffer_wifi_signal";
     private static final String ENTITY_UPTIME = "sensor.garaz_haier_sniffer_uptime";
+    // termostat Salus (dom) - nie z sniffera pompy, ale pokazywany razem z jej stanem
+    private static final String ENTITY_SALUS_ROOM_TEMPERATURE = "sensor.salus_termostat_rf_temperatura_pokoju";
+    private static final String ENTITY_SALUS_SETPOINT_TEMPERATURE = "sensor.salus_termostat_rf_temperatura_zadana";
+    private static final String ENTITY_SALUS_HEAT_DEMAND = "binary_sensor.salus_termostat_rf_zadanie_grzania";
 
     /** stany HA oznaczające brak wartości - dla pól tekstowych mapowane na null */
     private static final Set<String> UNAVAILABLE_STATES = Set.of("unavailable", "unknown");
@@ -94,7 +98,10 @@ public class HaierHeatPumpService {
             ENTITY_DEFROST_R156_BIT_4,
             ENTITY_CH_WATER_FLOW_ASSUMED,
             ENTITY_WIFI_SIGNAL,
-            ENTITY_UPTIME
+            ENTITY_UPTIME,
+            ENTITY_SALUS_ROOM_TEMPERATURE,
+            ENTITY_SALUS_SETPOINT_TEMPERATURE,
+            ENTITY_SALUS_HEAT_DEMAND
     );
 
     private final HaEntityRepo repo;
@@ -142,6 +149,10 @@ public class HaierHeatPumpService {
         dto.setChWaterFlowAssumed(toBigDecimal(byEntityId.get(ENTITY_CH_WATER_FLOW_ASSUMED)));
         dto.setWifiSignal(toBigDecimal(byEntityId.get(ENTITY_WIFI_SIGNAL)));
         dto.setUptime(toBigDecimal(byEntityId.get(ENTITY_UPTIME)));
+
+        dto.setSalusRoomTemperature(toBigDecimal(byEntityId.get(ENTITY_SALUS_ROOM_TEMPERATURE)));
+        dto.setSalusSetpointTemperature(toBigDecimal(byEntityId.get(ENTITY_SALUS_SETPOINT_TEMPERATURE)));
+        dto.setSalusHeatDemand(toBoolean(byEntityId.get(ENTITY_SALUS_HEAT_DEMAND)));
 
         dictionaryService.resolveDictionaryFields(dto);
 
